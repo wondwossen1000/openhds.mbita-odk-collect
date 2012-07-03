@@ -1,6 +1,8 @@
 package org.odk.collect.android.database;
 
 import java.io.File;
+import java.util.Set;
+
 import android.content.ContentValues;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
@@ -40,6 +42,8 @@ public class EntityIdAdapter {
 	// database columns location hierarchy
 	public static final String KEY_LOCHIERARCHY_NAME = "name";
 //	public static final String KEY_LEVEL= "level_uuid";
+	
+	public static final String KEY_SOCIALGROUP_EXT_ID = "sgExtId";
 	 
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
@@ -48,6 +52,10 @@ public class EntityIdAdapter {
 	        "create table individual (_id integer primary key autoincrement, " + 
 	        "extId text not null, firstname text not null, lastname text not null, " +
 	        "gender text not null);";
+
+	private static final String MEMBERSHIP_CREATE =
+	        "create table membership (_id integer, sgExtId text not null, PRIMARY KEY (_id, sgExtId), " +
+	        "FOREIGN KEY (_id) REFERENCES individual (_id));";
 	
 	private static final String FW_CREATE =
         "create table fieldworker (_id integer primary key autoincrement, " + 
@@ -86,6 +94,7 @@ public class EntityIdAdapter {
 	 private static final String DATABASE_TABLE_FW = "fieldworker";
 	 private static final String DATABASE_TABLE_HIERARCHY = "hierarchy";
 	 private static final String DATABASE_TABLE_LOCHIERARCHY = "locationhierarchy";
+	 private static final String DATABASE_TABLE_MEMBERSHIP = "membership";
 	 private static final int DATABASE_VERSION = 1;
 	 private static final String DATABASE_PATH = Environment.getExternalStorageDirectory() + "/odk/metadata";
 	 
@@ -108,12 +117,14 @@ public class EntityIdAdapter {
             db.execSQL(HIERARCHY_CREATE);
             db.execSQL(FW_CREATE);
             db.execSQL(LOCATIONHIERARCHY_CREATE);
+            db.execSQL(MEMBERSHIP_CREATE);
         }
 
         @Override
         // upgrading will destroy all old data
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INDIVIDUAL);
+            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_MEMBERSHIP);
+        	db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INDIVIDUAL);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_LOCATION);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_HOUSEHOLD);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_VISIT);
@@ -137,7 +148,7 @@ public class EntityIdAdapter {
         mDb.close();
     }
     
-    public long createIndividual(String extId, String firstname, String lastname, String gender) {
+    public long createIndividual(String extId, String firstname, String lastname, String gender, Set<String> memberships) {
         ContentValues cv = new ContentValues();
 
         cv.put(KEY_EXTID, extId);
@@ -146,11 +157,25 @@ public class EntityIdAdapter {
         cv.put(KEY_INDIVIDUAL_GENDER, gender);
 
         long id = -1;
+        mDb.beginTransaction();
         try {	
         	id = mDb.insertOrThrow(DATABASE_TABLE_INDIVIDUAL, null, cv);
+
+        	for(String membership : memberships) {
+        		cv.clear();
+        		cv.put(KEY_ID, id);
+        		cv.put(KEY_SOCIALGROUP_EXT_ID, membership);
+        		mDb.insertOrThrow(DATABASE_TABLE_MEMBERSHIP, null, cv);
+        	}
+        	
+        	mDb.setTransactionSuccessful();
         } catch (SQLiteConstraintException e) {
+        	id = -1;
             Log.e(t, "Caught SQLiteConstraitException: " + e);
+        } finally {
+        	mDb.endTransaction();
         }
+        
         return id;
     }
     

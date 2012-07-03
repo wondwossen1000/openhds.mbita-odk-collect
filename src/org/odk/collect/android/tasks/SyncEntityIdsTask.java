@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthenticationException;
@@ -21,6 +25,7 @@ import org.odk.collect.android.database.EntityIdAdapter;
 import org.odk.collect.android.listeners.CollectEntityIdsListener;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
@@ -209,7 +214,7 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
                                 if (type.equalsIgnoreCase("location"))
                                     saveLocationToDB(extId, paramMap.get("name"));
                                 if (type.equalsIgnoreCase("individual"))
-                                    saveIndividualToDB(extId, paramMap.get("firstname"), paramMap.get("lastname"), paramMap.get("gender"));
+                                    saveIndividualToDB(extId, paramMap.get("firstname"), paramMap.get("lastname"), paramMap.get("gender"), getMemberships(paramMap));
                                 if (type.equalsIgnoreCase("household"))
                                     saveHouseholdToDB(extId, paramMap.get("groupname"));
                                 if (type.equalsIgnoreCase("visit"))
@@ -230,7 +235,17 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
         }
     }
       
-    public void saveHierarchyToDB(String extId, String name) {
+    private Set<String> getMemberships(Map<String, String> paramMap) {
+    	Set<String> socialGroups = new HashSet<String>();
+    	for(Entry<String, String> entry : paramMap.entrySet()) {
+    		if (entry.getKey().startsWith("socialgroup")) {
+    			socialGroups.add(entry.getValue());
+    		}
+    	}
+    	return socialGroups;
+    }
+
+	public void saveHierarchyToDB(String extId, String name) {
          entityIdAdapter.open();
          entityIdAdapter.createHierarchy(extId, name);
          entityIdAdapter.close();
@@ -246,9 +261,9 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
         entityIdAdapter.createLocHierarchy(extId, name);
         entityIdAdapter.close();
    }
-    public void saveIndividualToDB(String extId, String firstname, String lastname, String gender) {
+    public void saveIndividualToDB(String extId, String firstname, String lastname, String gender, Set<String> memberships) {
          entityIdAdapter.open();
-         entityIdAdapter.createIndividual(extId, firstname, lastname, gender);
+         entityIdAdapter.createIndividual(extId, firstname, lastname, gender, memberships);
          entityIdAdapter.close();
     }
    
