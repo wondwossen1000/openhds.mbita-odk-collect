@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class EntityIdAdapter {
@@ -57,6 +58,10 @@ public class EntityIdAdapter {
 	        "create table membership (_id integer, sgExtId text not null, PRIMARY KEY (_id, sgExtId), " +
 	        "FOREIGN KEY (_id) REFERENCES individual (_id));";
 	
+	private static final String RESIDENCY_CREATE =
+			"create table residency (_id integer, extId text not null, PRIMARY KEY(_id, extId), " +
+			"FOREIGN KEY (_id) REFERENCES individual (_id));";
+	
 	private static final String FW_CREATE =
         "create table fieldworker (_id integer primary key autoincrement, " + 
         "extId text not null, firstname text not null, lastname text not null);";
@@ -95,6 +100,7 @@ public class EntityIdAdapter {
 	 private static final String DATABASE_TABLE_HIERARCHY = "hierarchy";
 	 private static final String DATABASE_TABLE_LOCHIERARCHY = "locationhierarchy";
 	 private static final String DATABASE_TABLE_MEMBERSHIP = "membership";
+	 private static final String DATABASE_TABLE_RESIDENCY = "residency";
 	 private static final int DATABASE_VERSION = 1;
 	 private static final String DATABASE_PATH = Environment.getExternalStorageDirectory() + "/odk/metadata";
 	 
@@ -118,12 +124,14 @@ public class EntityIdAdapter {
             db.execSQL(FW_CREATE);
             db.execSQL(LOCATIONHIERARCHY_CREATE);
             db.execSQL(MEMBERSHIP_CREATE);
+            db.execSQL(RESIDENCY_CREATE);
         }
 
         @Override
         // upgrading will destroy all old data
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_MEMBERSHIP);
+            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_RESIDENCY);
         	db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_INDIVIDUAL);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_LOCATION);
             db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_HOUSEHOLD);
@@ -148,7 +156,7 @@ public class EntityIdAdapter {
         mDb.close();
     }
     
-    public long createIndividual(String extId, String firstname, String lastname, String gender, Set<String> memberships) {
+    public long createIndividual(String extId, String firstname, String lastname, String gender, String location, Set<String> memberships) {
         ContentValues cv = new ContentValues();
 
         cv.put(KEY_EXTID, extId);
@@ -160,6 +168,13 @@ public class EntityIdAdapter {
         mDb.beginTransaction();
         try {	
         	id = mDb.insertOrThrow(DATABASE_TABLE_INDIVIDUAL, null, cv);
+        	
+			if (!TextUtils.isEmpty(location)) {
+				cv.clear();
+				cv.put(KEY_ID, id);
+				cv.put(KEY_EXTID, location);
+				mDb.insertOrThrow(DATABASE_TABLE_RESIDENCY, null, cv);
+			}
 
         	for(String membership : memberships) {
         		cv.clear();

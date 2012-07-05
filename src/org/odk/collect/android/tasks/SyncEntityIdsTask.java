@@ -214,7 +214,8 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
                                 if (type.equalsIgnoreCase("location"))
                                     saveLocationToDB(extId, paramMap.get("name"));
                                 if (type.equalsIgnoreCase("individual"))
-                                    saveIndividualToDB(extId, paramMap.get("firstname"), paramMap.get("lastname"), paramMap.get("gender"), getMemberships(paramMap));
+                                    saveIndividualToDB(extId, paramMap.get("firstname"), paramMap.get("lastname"), 
+                                    		paramMap.get("gender"), paramMap.get("location"), getMemberships(paramMap));
                                 if (type.equalsIgnoreCase("household"))
                                     saveHouseholdToDB(extId, paramMap.get("groupname"));
                                 if (type.equalsIgnoreCase("visit"))
@@ -261,9 +262,9 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
         entityIdAdapter.createLocHierarchy(extId, name);
         entityIdAdapter.close();
    }
-    public void saveIndividualToDB(String extId, String firstname, String lastname, String gender, Set<String> memberships) {
+    public void saveIndividualToDB(String extId, String firstname, String lastname, String gender, String location, Set<String> memberships) {
          entityIdAdapter.open();
-         entityIdAdapter.createIndividual(extId, firstname, lastname, gender, memberships);
+         entityIdAdapter.createIndividual(extId, firstname, lastname, gender, location, memberships);
          entityIdAdapter.close();
     }
    
