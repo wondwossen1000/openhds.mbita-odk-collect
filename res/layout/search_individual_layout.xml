@@ -74,11 +74,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Household"
+            android:text="Search by Household or Location:"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
+        <Spinner
+            android:id="@+id/householdLocationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <EditText
-            android:id="@+id/householdText"
+            android:id="@+id/householdLocationText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dip" />

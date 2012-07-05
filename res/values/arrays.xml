@@ -60,4 +60,8 @@
 		<item>Small</item>
 		<item>Extra Small</item>
 	</string-array>
+	<string-array name="entity_filter">
+		<item >Household</item>
+		<item >House</item>
+	</string-array>
 </resources>

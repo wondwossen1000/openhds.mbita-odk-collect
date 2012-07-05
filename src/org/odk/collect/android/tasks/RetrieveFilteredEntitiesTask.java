@@ -53,12 +53,22 @@ import android.text.TextUtils;
 					builder.append("gender like '" + dataParams[3] + "'");
 				}
 				
-				if (!TextUtils.isEmpty(dataParams[4])) {
-					if (builder.length() > 0) {
-						builder.append("and ");
+				if ("household".equals(dataParams[4])) {
+					if (!TextUtils.isEmpty(dataParams[5])) {
+						if (builder.length() > 0) {
+							builder.append("and ");
+						}
+						table.append(" i inner join membership m on i._id = m._id");
+						builder.append(" m." + EntityIdAdapter.KEY_SOCIALGROUP_EXT_ID + " like '" + dataParams[5] + "'");
 					}
-					table.append(" i inner join membership m on i._id = m._id");
-					builder.append(" m." + EntityIdAdapter.KEY_SOCIALGROUP_EXT_ID + " like '" + dataParams[4] + "'");
+				} else {
+					if (!TextUtils.isEmpty(dataParams[5])) {
+						if (builder.length() > 0) {
+							builder.append("and ");
+						}
+						table.append(" i inner join residency r on i._id = r._id");
+						builder.append(" r." + EntityIdAdapter.KEY_RESIDENCY_EXT_ID + " like '" + dataParams[5] + "'");
+					}
 				}
 				
 				if (builder.length() > 0)

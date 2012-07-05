@@ -45,6 +45,8 @@ public class EntityIdAdapter {
 //	public static final String KEY_LEVEL= "level_uuid";
 	
 	public static final String KEY_SOCIALGROUP_EXT_ID = "sgExtId";
+	
+	public static final String KEY_RESIDENCY_EXT_ID = "resExtId";
 	 
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
@@ -59,7 +61,7 @@ public class EntityIdAdapter {
 	        "FOREIGN KEY (_id) REFERENCES individual (_id));";
 	
 	private static final String RESIDENCY_CREATE =
-			"create table residency (_id integer, extId text not null, PRIMARY KEY(_id, extId), " +
+			"create table residency (_id integer, resExtId text not null, PRIMARY KEY(_id, resExtId), " +
 			"FOREIGN KEY (_id) REFERENCES individual (_id));";
 	
 	private static final String FW_CREATE =
@@ -172,7 +174,7 @@ public class EntityIdAdapter {
 			if (!TextUtils.isEmpty(location)) {
 				cv.clear();
 				cv.put(KEY_ID, id);
-				cv.put(KEY_EXTID, location);
+				cv.put(KEY_RESIDENCY_EXT_ID, location);
 				mDb.insertOrThrow(DATABASE_TABLE_RESIDENCY, null, cv);
 			}
 

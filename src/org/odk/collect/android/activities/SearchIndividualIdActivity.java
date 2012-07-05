@@ -1,13 +1,16 @@
 package org.odk.collect.android.activities;
 
 import org.odk.collect.android.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
@@ -22,7 +25,8 @@ public class SearchIndividualIdActivity extends Activity {
 	private RadioButton genderFemaleRadioButton;
 	private Button searchButton;
 	private Button clearButton;
-	private TextView householdText;
+	private TextView householdLocationText;
+	private Spinner householdLocationSpinner;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -35,7 +39,12 @@ public class SearchIndividualIdActivity extends Activity {
         genderFemaleRadioButton = (RadioButton)findViewById(R.id.female);
         searchButton = (Button)findViewById(R.id.filterResults);
         clearButton = (Button)findViewById(R.id.clear);
-        householdText = (TextView)findViewById(R.id.householdText);
+        householdLocationText = (TextView)findViewById(R.id.householdLocationText);
+        
+        householdLocationSpinner = (Spinner) findViewById(R.id.householdLocationSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.entity_filter, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        householdLocationSpinner.setAdapter(adapter);
         
         clearButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {  
@@ -43,7 +52,7 @@ public class SearchIndividualIdActivity extends Activity {
             	lastNameText.setText("");
             	genderMaleRadioButton.setChecked(false);
             	genderFemaleRadioButton.setChecked(false);
-            	householdText.setText("");
+            	householdLocationText.setText("");
             }
         });
         
@@ -62,7 +71,12 @@ public class SearchIndividualIdActivity extends Activity {
     			
             	bundle.putString("gender", gender);
             	
-            	bundle.putString("household", householdText.getText().toString());
+            	int position = householdLocationSpinner.getSelectedItemPosition();
+            	if (position == 0) {
+            		bundle.putString("household", householdLocationText.getText().toString());
+            	} else {
+            		bundle.putString("location", householdLocationText.getText().toString());
+            	}
             	
             	Intent intent = new Intent();
             	intent.putExtras(bundle);        	
