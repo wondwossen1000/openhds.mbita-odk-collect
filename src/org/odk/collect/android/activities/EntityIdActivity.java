@@ -185,8 +185,9 @@ public class EntityIdActivity extends Activity implements RetrieveEntityIdsListe
             	String firstname = bundle.get("firstname").toString();
             	String lastname = bundle.get("lastname").toString();
             	String gender = bundle.get("gender").toString();
+            	String household = bundle.getString("household");
             	 
-            	String[] indivData = {type, firstname, lastname, gender};
+            	String[] indivData = {type, firstname, lastname, gender, household};
             	spinnerDialog.show();
             	retrieveFilteredEntitiesTask = new RetrieveFilteredEntitiesTask(indivData, EntityIdActivity.this); 
             	retrieveFilteredEntitiesTask.execute();

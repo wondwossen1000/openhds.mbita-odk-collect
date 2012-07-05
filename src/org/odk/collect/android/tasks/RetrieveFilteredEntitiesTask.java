@@ -1,11 +1,14 @@
 package org.odk.collect.android.tasks;
 
 import java.util.ArrayList;
+
 import org.odk.collect.android.database.EntityIdAdapter;
 import org.odk.collect.android.listeners.RetrieveEntityIdsListener;
 import org.odk.collect.android.logic.CustomItem;
+
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 	/**
 	 * Retrieve the results of Individuals based on what is set in the query fields
@@ -33,6 +36,8 @@ import android.os.AsyncTask;
 			ArrayList<CustomItem> output = new ArrayList<CustomItem>();
 			Cursor cursor = null;
 			
+			StringBuilder table = new StringBuilder("individual");
+			
 			if (type.equalsIgnoreCase("individual")) {
 				if (!dataParams[1].equals(""))
 					builder.append("firstname like '" + dataParams[1] + "' ");
@@ -48,8 +53,16 @@ import android.os.AsyncTask;
 					builder.append("gender like '" + dataParams[3] + "'");
 				}
 				
+				if (!TextUtils.isEmpty(dataParams[4])) {
+					if (builder.length() > 0) {
+						builder.append("and ");
+					}
+					table.append(" i inner join membership m on i._id = m._id");
+					builder.append(" m." + EntityIdAdapter.KEY_SOCIALGROUP_EXT_ID + " like '" + dataParams[4] + "'");
+				}
+				
 				if (builder.length() > 0)
-					cursor = entityIdAdapter.getmDb().query("individual", new String [] {"extId", "firstname", "lastname"}, builder.toString(), null, null, null, "extId");
+					cursor = entityIdAdapter.getmDb().query(table.toString(), new String [] {"extId", "firstname", "lastname"}, builder.toString(), null, null, null, "extId");
 				else
 					cursor = entityIdAdapter.getmDb().query("individual", new String [] {"extId", "firstname", "lastname"}, null, null, null, null, "extId");		
 			

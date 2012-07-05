@@ -22,6 +22,7 @@ public class SearchIndividualIdActivity extends Activity {
 	private RadioButton genderFemaleRadioButton;
 	private Button searchButton;
 	private Button clearButton;
+	private TextView householdText;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -34,6 +35,7 @@ public class SearchIndividualIdActivity extends Activity {
         genderFemaleRadioButton = (RadioButton)findViewById(R.id.female);
         searchButton = (Button)findViewById(R.id.filterResults);
         clearButton = (Button)findViewById(R.id.clear);
+        householdText = (TextView)findViewById(R.id.householdText);
         
         clearButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {  
@@ -41,6 +43,7 @@ public class SearchIndividualIdActivity extends Activity {
             	lastNameText.setText("");
             	genderMaleRadioButton.setChecked(false);
             	genderFemaleRadioButton.setChecked(false);
+            	householdText.setText("");
             }
         });
         
@@ -58,6 +61,8 @@ public class SearchIndividualIdActivity extends Activity {
     				gender = "F";
     			
             	bundle.putString("gender", gender);
+            	
+            	bundle.putString("household", householdText.getText().toString());
             	
             	Intent intent = new Intent();
             	intent.putExtras(bundle);        	
