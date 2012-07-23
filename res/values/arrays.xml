@@ -63,5 +63,6 @@
 	<string-array name="entity_filter">
 		<item >Household</item>
 		<item >House</item>
+		<item >Village</item>
 	</string-array>
 </resources>

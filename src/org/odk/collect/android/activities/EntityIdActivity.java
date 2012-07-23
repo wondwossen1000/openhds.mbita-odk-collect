@@ -190,9 +190,12 @@ public class EntityIdActivity extends Activity implements RetrieveEntityIdsListe
             	if (bundle.containsKey("household")) {
             		filterType = "household";
             		filterValue = bundle.getString("household");	
-            	} else {
+            	} else if (bundle.containsKey("location")){
             		filterType = "location";
             		filterValue = bundle.getString("location");
+            	} else {
+            		filterType = "village";
+            		filterValue = bundle.getString("village");
             	}
             	 
             	String[] indivData = {type, firstname, lastname, gender, filterType, filterValue};

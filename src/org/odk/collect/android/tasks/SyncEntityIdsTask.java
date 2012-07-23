@@ -72,8 +72,8 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
         creds = new UsernamePasswordCredentials(username, password);
        
         HttpParams httpParameters = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParameters, 20000);
-        HttpConnectionParams.setSoTimeout(httpParameters, 20000);
+        HttpConnectionParams.setConnectionTimeout(httpParameters, 0);
+        HttpConnectionParams.setSoTimeout(httpParameters, 0);
         client = new DefaultHttpClient(httpParameters);
         
         if (filter)
@@ -215,7 +215,7 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
                                     saveLocationToDB(extId, paramMap.get("name"));
                                 if (type.equalsIgnoreCase("individual"))
                                     saveIndividualToDB(extId, paramMap.get("firstname"), paramMap.get("lastname"), 
-                                    		paramMap.get("gender"), paramMap.get("location"), getMemberships(paramMap));
+                                    		paramMap.get("gender"), paramMap.get("location"), paramMap.get("village"), getMemberships(paramMap));
                                 if (type.equalsIgnoreCase("household"))
                                     saveHouseholdToDB(extId, paramMap.get("groupname"));
                                 if (type.equalsIgnoreCase("visit"))
@@ -262,9 +262,9 @@ public class SyncEntityIdsTask extends AsyncTask<Void, Integer, Boolean> {
         entityIdAdapter.createLocHierarchy(extId, name);
         entityIdAdapter.close();
    }
-    public void saveIndividualToDB(String extId, String firstname, String lastname, String gender, String location, Set<String> memberships) {
+    public void saveIndividualToDB(String extId, String firstname, String lastname, String gender, String location,String village, Set<String> memberships) {
          entityIdAdapter.open();
-         entityIdAdapter.createIndividual(extId, firstname, lastname, gender, location, memberships);
+         entityIdAdapter.createIndividual(extId, firstname, lastname, gender, location,village, memberships);
          entityIdAdapter.close();
     }
    

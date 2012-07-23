@@ -74,8 +74,10 @@ public class SearchIndividualIdActivity extends Activity {
             	int position = householdLocationSpinner.getSelectedItemPosition();
             	if (position == 0) {
             		bundle.putString("household", householdLocationText.getText().toString());
-            	} else {
+            	} else if (position == 1){
             		bundle.putString("location", householdLocationText.getText().toString());
+            	}  else {
+            		bundle.putString("village", householdLocationText.getText().toString());
             	}
             	
             	Intent intent = new Intent();

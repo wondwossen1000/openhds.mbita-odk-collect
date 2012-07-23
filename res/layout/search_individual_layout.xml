@@ -74,7 +74,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search by Household or Location:"
+            android:text="Search by Household, Location or Village:"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <Spinner
